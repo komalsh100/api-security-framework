@@ -19,7 +19,7 @@
     <div class="container" style="padding:0;">
       <h1 style="font-size:26px;font-weight:700;">API Security Scan Report</h1>
       <p style="margin-top:8px;opacity:0.85;">Target: <strong>http://localhost:5000</strong></p>
-      <p style="margin-top:4px;opacity:0.7;font-size:13px;">Generated: March 18, 2026 at 13:55</p>
+      <p style="margin-top:4px;opacity:0.7;font-size:13px;">Generated: March 18, 2026 at 14:01</p>
     </div>
   </div>
 
@@ -29,7 +29,7 @@
       
         <div style="background:#fff;border:1px solid #e2e8f0;border-top:4px solid #667eea;
                     border-radius:8px;padding:20px;text-align:center;min-width:110px;">
-          <div style="font-size:36px;font-weight:700;color:#667eea;">7</div>
+          <div style="font-size:36px;font-weight:700;color:#667eea;">11</div>
           <div style="font-size:13px;color:#718096;margin-top:4px;">Total</div>
         </div>
         <div style="background:#fff;border:1px solid #e2e8f0;border-top:4px solid #e53e3e;
@@ -39,7 +39,7 @@
         </div>
         <div style="background:#fff;border:1px solid #e2e8f0;border-top:4px solid #dd6b20;
                     border-radius:8px;padding:20px;text-align:center;min-width:110px;">
-          <div style="font-size:36px;font-weight:700;color:#dd6b20;">0</div>
+          <div style="font-size:36px;font-weight:700;color:#dd6b20;">4</div>
           <div style="font-size:13px;color:#718096;margin-top:4px;">Medium</div>
         </div>
         <div style="background:#fff;border:1px solid #e2e8f0;border-top:4px solid #d69e2e;
@@ -59,7 +59,10 @@
       <h3 style="font-size:16px;margin-bottom:12px;">OWASP API Top 10 Breakdown</h3>
       <table>
         <thead><tr><th>Category</th><th>Count</th></tr></thead>
-        <tbody></tbody>
+        <tbody><tr>
+          <td style="padding:8px 12px;font-size:13px;">Uncategorized</td>
+          <td style="padding:8px 12px;font-size:13px;font-weight:600;">4</td>
+        </tr></tbody>
       </table>
     </div>
 
@@ -67,9 +70,85 @@
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;">
       <h3 style="font-size:16px;margin-bottom:4px;">Findings Detail</h3>
       <p style="font-size:13px;color:#718096;margin-bottom:20px;">
-        7 total findings across 0 OWASP categories
+        11 total findings across 1 OWASP categories
       </p>
-      <p style="color:#718096;text-align:center;padding:40px;">No findings to display.</p>
+      
+        <h3 style="color:#dd6b20;border-bottom:2px solid #dd6b20;padding-bottom:6px;margin:28px 0 16px;">
+          Medium Severity (4)
+        </h3>
+        
+    <div style="background:#fffaf0;border:1px solid #e2e8f0;border-left:4px solid #dd6b20;
+                border-radius:8px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong style="font-size:15px;">#1 — Content Security Policy (CSP) Header Not Set</strong>
+        <span style="background:#dd6b20;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">Medium</span>
+      </div>
+      <div style="margin-bottom:6px;">
+        <span style="background:#e2e8f0;color:#4a5568;padding:2px 8px;border-radius:10px;font-size:12px;">Uncategorized</span>
+      </div>
+      <p style="font-size:13px;color:#4a5568;margin:8px 0;">Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that </p>
+      <div style="margin-top:8px;"><code style="font-size:12px;background:#edf2f7;padding:2px 6px;border-radius:4px;">http://localhost:5000/sitemap.xml</code></div>
+      
+      
+        <div style="margin-top:8px;padding:8px 12px;background:#f0fff4;border-left:3px solid #38a169;border-radius:0 4px 4px 0;">
+          <strong style="font-size:13px;color:#276749;">Remediation:</strong>
+          <p style="margin:4px 0 0;font-size:13px;color:#276749;">Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.</p>
+        </div>
+    </div>
+    <div style="background:#fffaf0;border:1px solid #e2e8f0;border-left:4px solid #dd6b20;
+                border-radius:8px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong style="font-size:15px;">#2 — Content Security Policy (CSP) Header Not Set</strong>
+        <span style="background:#dd6b20;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">Medium</span>
+      </div>
+      <div style="margin-bottom:6px;">
+        <span style="background:#e2e8f0;color:#4a5568;padding:2px 8px;border-radius:10px;font-size:12px;">Uncategorized</span>
+      </div>
+      <p style="font-size:13px;color:#4a5568;margin:8px 0;">Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that </p>
+      <div style="margin-top:8px;"><code style="font-size:12px;background:#edf2f7;padding:2px 6px;border-radius:4px;">http://localhost:5000</code></div>
+      
+      
+        <div style="margin-top:8px;padding:8px 12px;background:#f0fff4;border-left:3px solid #38a169;border-radius:0 4px 4px 0;">
+          <strong style="font-size:13px;color:#276749;">Remediation:</strong>
+          <p style="margin:4px 0 0;font-size:13px;color:#276749;">Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.</p>
+        </div>
+    </div>
+    <div style="background:#fffaf0;border:1px solid #e2e8f0;border-left:4px solid #dd6b20;
+                border-radius:8px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong style="font-size:15px;">#3 — Content Security Policy (CSP) Header Not Set</strong>
+        <span style="background:#dd6b20;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">Medium</span>
+      </div>
+      <div style="margin-bottom:6px;">
+        <span style="background:#e2e8f0;color:#4a5568;padding:2px 8px;border-radius:10px;font-size:12px;">Uncategorized</span>
+      </div>
+      <p style="font-size:13px;color:#4a5568;margin:8px 0;">Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that </p>
+      <div style="margin-top:8px;"><code style="font-size:12px;background:#edf2f7;padding:2px 6px;border-radius:4px;">http://localhost:5000/robots.txt</code></div>
+      
+      
+        <div style="margin-top:8px;padding:8px 12px;background:#f0fff4;border-left:3px solid #38a169;border-radius:0 4px 4px 0;">
+          <strong style="font-size:13px;color:#276749;">Remediation:</strong>
+          <p style="margin:4px 0 0;font-size:13px;color:#276749;">Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.</p>
+        </div>
+    </div>
+    <div style="background:#fffaf0;border:1px solid #e2e8f0;border-left:4px solid #dd6b20;
+                border-radius:8px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong style="font-size:15px;">#4 — HTTP Only Site</strong>
+        <span style="background:#dd6b20;color:#fff;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;">Medium</span>
+      </div>
+      <div style="margin-bottom:6px;">
+        <span style="background:#e2e8f0;color:#4a5568;padding:2px 8px;border-radius:10px;font-size:12px;">Uncategorized</span>
+      </div>
+      <p style="font-size:13px;color:#4a5568;margin:8px 0;">The site is only served under HTTP and not HTTPS.</p>
+      <div style="margin-top:8px;"><code style="font-size:12px;background:#edf2f7;padding:2px 6px;border-radius:4px;">http://localhost:5000</code></div>
+      
+      
+        <div style="margin-top:8px;padding:8px 12px;background:#f0fff4;border-left:3px solid #38a169;border-radius:0 4px 4px 0;">
+          <strong style="font-size:13px;color:#276749;">Remediation:</strong>
+          <p style="margin:4px 0 0;font-size:13px;color:#276749;">Configure your web or application server to use SSL (https).</p>
+        </div>
+    </div>
     </div>
 
     <p style="text-align:center;font-size:12px;color:#a0aec0;margin-top:24px;">
