@@ -1,0 +1,33 @@
+{
+  "name": "API Security Framework",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "postCreateCommand": "pip install -r requirements.txt && echo '✅ Dependencies installed. Run: python scanner.py --mode demo'",
+
+  "forwardPorts": [5000, 8090],
+
+  "portsAttributes": {
+    "5000": { "label": "Target Flask App",  "onAutoForward": "silent" },
+    "8090": { "label": "OWASP ZAP Daemon", "onAutoForward": "silent" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.pylint",
+        "redhat.vscode-yaml",
+        "GitHub.vscode-pull-request-github"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "files.autoSave": "onFocusChange"
+      }
+    }
+  }
+}

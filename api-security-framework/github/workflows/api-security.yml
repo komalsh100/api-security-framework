@@ -1,0 +1,183 @@
+name: API Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: "Target API URL to scan"
+        required: true
+        default: "http://localhost:8080"
+      min_severity:
+        description: "Minimum severity to report"
+        required: false
+        default: "Medium"
+        type: choice
+        options: [High, Medium, Low, Informational]
+
+jobs:
+  api-security-scan:
+    name: OWASP API Top 10 Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install python-owasp-zap-v2.4 requests
+
+      - name: Start OWASP ZAP daemon
+        run: |
+          docker pull ghcr.io/zaproxy/zaproxy:stable
+          docker run -d \
+            --name zap \
+            --network host \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap.sh -daemon \
+              -port 8080 \
+              -host 0.0.0.0 \
+              -config api.key=${{ secrets.ZAP_API_KEY || 'changeme' }} \
+              -config api.addrs.addr.name=.* \
+              -config api.addrs.addr.regex=true
+          echo "Waiting for ZAP to start..."
+          sleep 15
+
+      - name: Verify ZAP is running
+        run: |
+          curl -s "http://localhost:8080/JSON/core/view/version/?apikey=changeme" | grep -q "version"
+          echo "ZAP is ready"
+
+      - name: Run API security scan
+        id: scan
+        env:
+          TARGET_URL: ${{ github.event.inputs.target_url || 'http://localhost:8080' }}
+          MIN_SEVERITY: ${{ github.event.inputs.min_severity || 'Medium' }}
+          AUTH_TOKEN: ${{ secrets.API_AUTH_TOKEN }}
+        run: |
+          mkdir -p reports
+          python scanner.py \
+            --target "$TARGET_URL" \
+            --zap-api-key "changeme" \
+            --min-severity "$MIN_SEVERITY" \
+            --output-json reports/findings.json \
+            --output-html reports/dashboard.html \
+            ${{ env.AUTH_TOKEN && '--auth-type bearer --auth-token "$AUTH_TOKEN"' || '' }}
+
+      - name: Parse findings for PR comment
+        id: parse
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 - <<'EOF'
+          import json, os
+
+          with open("reports/findings.json") as f:
+              data = json.load(f)
+
+          summary = data.get("summary", {})
+          total   = data.get("total", 0)
+          high    = summary.get("High", 0)
+          medium  = summary.get("Medium", 0)
+          low     = summary.get("Low", 0)
+          target  = data.get("target", "unknown")
+
+          status = "✅ PASSED" if high == 0 else "❌ FAILED"
+          emoji  = "🔴" if high > 0 else ("🟠" if medium > 0 else "🟡")
+
+          top_findings = []
+          for f in (data.get("zap_findings", []) + data.get("custom_findings", []))[:5]:
+              risk = f.get("risk", "?")
+              name = f.get("name", f.get("alert", "Unknown"))
+              owasp = f.get("owasp", "")
+              top_findings.append(f"| {risk} | {name} | {owasp} |")
+
+          findings_table = "\n".join(top_findings) if top_findings else "| — | No findings | — |"
+
+          comment = f"""## {emoji} API Security Scan Results — {status}
+
+          **Target:** `{target}`
+
+          | Severity | Count |
+          |----------|-------|
+          | 🔴 High   | {high} |
+          | 🟠 Medium | {medium} |
+          | 🟡 Low    | {low} |
+          | **Total** | **{total}** |
+
+          ### Top Findings
+          | Severity | Finding | OWASP Category |
+          |----------|---------|----------------|
+          {findings_table}
+
+          > 📄 Full HTML dashboard available in workflow artifacts.
+          {"⛔ **This PR introduces HIGH severity findings. Review required before merge.**" if high > 0 else ""}
+          """
+
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"SCAN_COMMENT<<EOF\n{comment}\nEOF\n")
+              f.write(f"HIGH_COUNT={high}\n")
+          EOF
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = process.env.SCAN_COMMENT;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('API Security Scan Results')
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: comment,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment,
+              });
+            }
+
+      - name: Upload reports as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-reports
+          path: reports/
+          retention-days: 30
+
+      - name: Fail if high severity findings
+        if: steps.scan.outcome == 'success'
+        run: |
+          HIGH=$(python3 -c "import json; d=json.load(open('reports/findings.json')); print(d['summary'].get('High',0))")
+          if [ "$HIGH" -gt "0" ]; then
+            echo "❌ Build failed — $HIGH high severity finding(s) detected"
+            exit 1
+          fi
+          echo "✅ No high severity findings — build passed"
+
+      - name: Stop ZAP
+        if: always()
+        run: docker stop zap || true
