@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 Report generator — produces a clean HTML dashboard from scan findings.
@@ -88,10 +89,10 @@ def generate_report(
 ) -> None:
     all_findings = zap_findings + custom_findings
     total  = len(all_findings)
-    high   = sum(1 for f in all_findings if f.get("risk", f.get("Risk", "")) == "High")
-    medium = sum(1 for f in all_findings if f.get("risk", f.get("Risk", "")) == "Medium")
-    low    = sum(1 for f in all_findings if f.get("risk", f.get("Risk", "")) == "Low")
-    info   = sum(1 for f in all_findings if f.get("risk", f.get("Risk", "")) == "Informational")
+    high   = sum(1 for f in zap_findings if f.get("risk","").lower() == "high")
+    medium = sum(1 for f in zap_findings if f.get("risk","").lower() == "medium")
+    low    = sum(1 for f in zap_findings if f.get("risk","").lower() == "low")
+    info   = sum(1 for f in zap_findings if f.get("risk","").lower() == "informational")
 
     scan_date = datetime.now().strftime("%B %d, %Y at %H:%M")
 
@@ -114,7 +115,7 @@ def generate_report(
 
     # OWASP breakdown
     owasp_counts = {}
-    for f in all_findings:
+    for f in zap_findings:
         cat = f.get("owasp", "Uncategorized")
         owasp_counts[cat] = owasp_counts.get(cat, 0) + 1
 
@@ -140,10 +141,10 @@ def generate_report(
         {cards_html}"""
 
     findings_html = (
-        section("High",   "High",          all_findings) +
-        section("Medium", "Medium",         all_findings) +
-        section("Low",    "Low",            all_findings) +
-        section("Info",   "Informational",  all_findings)
+        section("High",   "High",          zap_findings) +
+        section("Medium", "Medium",         zap_findings) +
+        section("Low",    "Low",            zap_findings) +
+        section("Info",   "Informational",  zap_findings)
     ) or '<p style="color:#718096;text-align:center;padding:40px;">No findings to display.</p>'
 
     html = f"""<!DOCTYPE html>
@@ -202,6 +203,7 @@ def generate_report(
 </body>
 </html>"""
 
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"[+] HTML dashboard saved → {output_path}")
